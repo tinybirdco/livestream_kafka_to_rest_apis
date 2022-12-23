@@ -4,6 +4,7 @@ import math
 import json
 import random
 import time
+import os
 from dotenv import load_dotenv
 from datetime import timedelta, datetime
 from confluent_kafka import Producer
