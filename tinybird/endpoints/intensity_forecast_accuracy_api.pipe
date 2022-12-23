@@ -1,0 +1,83 @@
+TOKEN dashboard READ
+
+DESCRIPTION >
+	# Forecast Accuracy
+
+Monitors the accuracy of the forecast predictions with daily granularity. 
+
+- When requesting <7 days, data is an hourly average of the difference between the Forecast Vs Real intensity value.
+- When requesting >7 days, data is a daily average of the difference between the Forecast Vs Real intensity value.
+
+
+Use `param_from` & `param_to` to supply a date range for Time Series data
+
+
+NODE timeseries
+SQL >
+
+    %
+    SELECT 
+      hour,
+      avgMerge(diff) as diff
+    FROM average_hourly_forcast_difference_mv
+    WHERE
+        1
+        {% if defined(param_from) %}
+            AND hour
+            >= {{
+                Date(
+                    param_from,
+                    "2020-12-01",
+                    description="Time Range start",
+                    required=True,
+                )
+            }}
+        {% end %}
+        {% if defined(param_to) %}
+            AND hour
+            < {{
+                Date(
+                    param_to,
+                    "2020-12-01",
+                    description="Time Range end",
+                    required=True,
+                )
+            }}
+        {% end %}
+    GROUP BY hour
+    ORDER BY hour ASC
+
+
+
+NODE by_hour
+SQL >
+
+    SELECT hour as day, ceil(toFloat32(diff), 1) as diff FROM timeseries
+    ORDER BY hour ASC
+
+
+
+NODE by_day
+SQL >
+
+    SELECT toDate(hour) as day, ceil(toFloat32(avg(diff)), 1) as diff
+    FROM timeseries
+    GROUP BY day
+    ORDER BY day ASC
+
+
+
+NODE endpoint
+SQL >
+
+    %
+    {% if defined(param_to) and defined(param_from) %}
+    SELECT
+        {% set days_interval = day_diff(Date(param_to, "2018-01-01"), Date(param_from, "2018-01-31")) %} 
+        day, diff
+    FROM {% if days_interval < 7 %} by_hour {% else %} by_day {% end %}
+    {% else %} 
+    SELECT * FROM by_day
+    {% end %}
+
+

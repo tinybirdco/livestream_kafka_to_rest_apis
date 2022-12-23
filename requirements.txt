@@ -1,0 +1,5 @@
+requests
+confluent-kafka
+tinybird-cli
+pyarrow
+python-dotenv

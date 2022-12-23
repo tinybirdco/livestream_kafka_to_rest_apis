@@ -1,0 +1,25 @@
+TOKEN data_ingest APPEND
+
+SCHEMA >
+    `__value` String,
+    `__topic` LowCardinality(String),
+    `__partition` Int16,
+    `__offset` Int64,
+    `__timestamp` DateTime,
+    `__key` String,
+    `intensity_actual` Int16 `json:$.intensity_actual`,
+    `intensity_forecast` Int16 `json:$.intensity_forecast`,
+    `intensity_index` String `json:$.intensity_index`,
+    `time_from` DateTime `json:$.time_from`,
+    `time_to` DateTime `json:$.time_to`
+
+ENGINE "MergeTree"
+ENGINE_PARTITION_KEY "toYYYYMM(__timestamp)"
+ENGINE_SORTING_KEY "__timestamp"
+
+KAFKA_CONNECTION_NAME 'demo'
+KAFKA_TOPIC 'intensity'
+KAFKA_GROUP_ID 'intensity_1671317902381'
+KAFKA_AUTO_OFFSET_RESET 'earliest'
+KAFKA_STORE_RAW_VALUE 'False'
+KAFKA_TARGET_PARTITIONS 'auto'

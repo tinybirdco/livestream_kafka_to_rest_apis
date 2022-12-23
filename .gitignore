@@ -1,0 +1,6 @@
+.venv
+.tinyb
+.env
+__pycache__/
+data_files/
+.DS_Store

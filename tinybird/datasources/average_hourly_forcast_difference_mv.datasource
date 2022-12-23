@@ -1,0 +1,9 @@
+# Data Source created from Pipe 'average_hourly_forcast_difference_materialize'
+
+SCHEMA >
+    `hour` DateTime,
+    `diff` AggregateFunction(avg, Int32)
+
+ENGINE "AggregatingMergeTree"
+ENGINE_PARTITION_KEY "toYear(hour)"
+ENGINE_SORTING_KEY "hour"

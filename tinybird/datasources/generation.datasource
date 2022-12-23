@@ -1,0 +1,31 @@
+TOKEN data_ingest APPEND
+
+SCHEMA >
+    `__value` String,
+    `__topic` LowCardinality(String),
+    `__partition` Int16,
+    `__offset` Int64,
+    `__timestamp` DateTime,
+    `__key` String,
+    `biomass` Float32 `json:$.biomass`,
+    `coal` Float32 `json:$.coal`,
+    `gas` Float32 `json:$.gas`,
+    `hydro` Float32 `json:$.hydro`,
+    `imports` Float32 `json:$.imports`,
+    `nuclear` Float32 `json:$.nuclear`,
+    `other` Float32 `json:$.other`,
+    `solar` Float32 `json:$.solar`,
+    `time_from` DateTime `json:$.time_from`,
+    `time_to` DateTime `json:$.time_to`,
+    `wind` Float32 `json:$.wind`
+
+ENGINE "MergeTree"
+ENGINE_PARTITION_KEY "toYYYYMM(__timestamp)"
+ENGINE_SORTING_KEY "__timestamp"
+
+KAFKA_CONNECTION_NAME 'demo'
+KAFKA_TOPIC 'generation'
+KAFKA_GROUP_ID 'generation_1671317876103'
+KAFKA_AUTO_OFFSET_RESET 'earliest'
+KAFKA_STORE_RAW_VALUE 'False'
+KAFKA_TARGET_PARTITIONS 'auto'

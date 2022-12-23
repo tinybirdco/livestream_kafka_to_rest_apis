@@ -1,0 +1,51 @@
+TOKEN dashboard READ
+
+DESCRIPTION >
+	# Carbon Intensity data
+
+Provides access to Carbon Intensity data. Values returned are averages over a 15 minute window.
+
+Use `param_from` & `param_to` to supply a date range for Time Series data
+
+Use `latest` to get a single row representing the latest intensity data
+
+
+NODE endpoint
+SQL >
+
+    %
+    SELECT
+        toInt16(avg(intensity_actual)) as intensity_actual,
+        toInt16(avg(intensity_forecast)) intensity_forecast,
+        toStartOfFifteenMinutes(time_from) as time_from
+    FROM intensity
+    WHERE
+        1
+        {% if defined(param_from) %}
+            AND time_from
+            >= {{
+                Date(
+                    param_from,
+                    "2020-12-01",
+                    description="Time Range start",
+                    required=True,
+                )
+            }}
+        {% end %}
+        {% if defined(param_to) %}
+            AND time_to
+            < {{
+                Date(
+                    param_to,
+                    "2020-12-01",
+                    description="Time Range end",
+                    required=True,
+                )
+            }}
+        {% end %}
+    GROUP BY time_from
+    {% if defined(latest) and latest == "true" %} ORDER BY time_from DESC LIMIT 1
+    {% else %} ORDER BY time_from ASC
+    {% end %}
+
+
