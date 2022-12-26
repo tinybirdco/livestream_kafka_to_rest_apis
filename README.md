@@ -62,7 +62,7 @@ You can connect Tinybird to Kafka either from the [UI](https://www.tinybird.co/d
 For this demo, create the connection from the CLI using the following command. You should replace the `HOST:PORT`, `KEY` and `SECRET` strings with your Kafka details.
 
 ```
-tb connection create kafka --bootstrap-server HOST:PORT --key KEY --secret SECRET --connection-name demo
+tb connection create kafka --bootstrap-servers HOST:PORT --key KEY --secret SECRET --connection-name demo
 ```
 
 ## Deploy Tinybird Data Project
