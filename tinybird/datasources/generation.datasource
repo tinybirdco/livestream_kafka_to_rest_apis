@@ -20,12 +20,14 @@ SCHEMA >
     `wind` Float32 `json:$.wind`
 
 ENGINE "MergeTree"
-ENGINE_PARTITION_KEY "toYYYYMM(__timestamp)"
-ENGINE_SORTING_KEY "__timestamp"
+ENGINE_PARTITION_KEY "toYear(time_from)"
+ENGINE_SORTING_KEY "time_from"
 
-KAFKA_CONNECTION_NAME 'demo'
+INCLUDE "connections/kafka.incl"
+
+KAFKA_CONNECTION_NAME 'confluent_cloud'
 KAFKA_TOPIC 'generation'
-KAFKA_GROUP_ID 'generation_1671317876103'
+KAFKA_GROUP_ID 'generation_1'
 KAFKA_AUTO_OFFSET_RESET 'earliest'
 KAFKA_STORE_RAW_VALUE 'False'
 KAFKA_TARGET_PARTITIONS 'auto'

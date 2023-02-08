@@ -14,12 +14,14 @@ SCHEMA >
     `time_to` DateTime `json:$.time_to`
 
 ENGINE "MergeTree"
-ENGINE_PARTITION_KEY "toYYYYMM(__timestamp)"
-ENGINE_SORTING_KEY "__timestamp"
+ENGINE_PARTITION_KEY "toYear(time_from)"
+ENGINE_SORTING_KEY "time_from"
 
-KAFKA_CONNECTION_NAME 'demo'
+INCLUDE "connections/kafka.incl"
+
+KAFKA_CONNECTION_NAME 'confluent_cloud'
 KAFKA_TOPIC 'intensity'
-KAFKA_GROUP_ID 'intensity_1671317902381'
+KAFKA_GROUP_ID 'intensity_1'
 KAFKA_AUTO_OFFSET_RESET 'earliest'
 KAFKA_STORE_RAW_VALUE 'False'
 KAFKA_TARGET_PARTITIONS 'auto'
