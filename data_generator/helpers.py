@@ -6,7 +6,7 @@ import random
 import time
 import os
 from dotenv import load_dotenv
-from datetime import timedelta, datetime
+from datetime import timedelta, datetime, date
 from confluent_kafka import Producer
 
 load_dotenv()
@@ -91,14 +91,19 @@ def batch(iterable, n=1):
         yield iterable[ndx:min(ndx + n, l)]
 
 
+def json_serial(obj):
+    if isinstance(obj, (datetime, date)):
+        return obj.isoformat()
+    raise TypeError ("Type %s not serializable" % type(obj))
+
 def send_batches_to_kafka(topic, message_batch):
     producer = get_producer()
     for batch_slice in batch(message_batch, 1000):
         producer.poll(0)
         for message in batch_slice:
             try:
-                producer.produce(topic, value=json.dumps(message).encode('utf-8'))
+                producer.produce(topic, value=json.dumps(message, default=json_serial).encode('utf-8'))
             except BufferError:
                 producer.flush()
-                producer.produce(topic, value=json.dumps(message).encode('utf-8'))
+                producer.produce(topic, value=json.dumps(message, default=json_serial).encode('utf-8'))
         time.sleep(0.1)
