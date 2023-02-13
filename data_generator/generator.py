@@ -1,4 +1,3 @@
-
 from datetime import datetime, timedelta
 from carbonintensity.intensity import intensity_generate_day
 from carbonintensity.generation import generation_generate_day

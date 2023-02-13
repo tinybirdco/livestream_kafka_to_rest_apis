@@ -1,0 +1,15 @@
+NODE mv
+
+SQL >
+    SELECT
+        avgState(intensity_actual) AS intensity_actual,
+        avgState(intensity_forecast) AS intensity_forecast,
+        toStartOfFifteenMinutes(time_from) AS time_from
+    FROM intensity
+    GROUP BY time_from
+
+TYPE materialized
+DATASOURCE intensity_average_mv
+ENGINE "AggregatingMergeTree"
+ENGINE_PARTITION_KEY "toYear(time_from)"
+ENGINE_SORTING_KEY "time_from"

@@ -14,38 +14,22 @@ NODE endpoint
 SQL >
 
     %
-    SELECT
-        toInt16(avg(intensity_actual)) as intensity_actual,
-        toInt16(avg(intensity_forecast)) intensity_forecast,
+    SELECT 
+        toInt16(avgMerge(intensity_actual)) as intensity_actual,
+        toInt16(avgMerge(intensity_forecast)) as intensity_forecast,
         toStartOfFifteenMinutes(time_from) as time_from
-    FROM intensity
-    WHERE
-        1
+    FROM intensity_average_mv
+    WHERE 1
         {% if defined(param_from) %}
-            AND time_from
-            >= {{
-                Date(
-                    param_from,
-                    "2020-12-01",
-                    description="Time Range start",
-                    required=True,
-                )
-            }}
+        AND time_from > {{ Date(param_from, "2018-05-31", description="Time Range Start", required=True) }}
         {% end %}
         {% if defined(param_to) %}
-            AND time_to
-            < {{
-                Date(
-                    param_to,
-                    "2020-12-01",
-                    description="Time Range end",
-                    required=True,
-                )
-            }}
+        AND time_from < {{ Date(param_to, "2018-06-01", description="Time Range End", required=True) }}
         {% end %}
     GROUP BY time_from
-    {% if defined(latest) and latest == "true" %} ORDER BY time_from DESC LIMIT 1
-    {% else %} ORDER BY time_from ASC
+    {% if defined(latest) and latest == 'true' %}
+    ORDER BY time_from DESC
+    LIMIT 1
+    {% else %}
+    ORDER BY time_from ASC
     {% end %}
-
-
